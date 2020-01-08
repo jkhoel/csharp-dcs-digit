@@ -116,16 +116,16 @@
             </TabItem>
             <!-- Settings TAB -->
             <TabItem Header="Settings">
-                <DataGrid x:Name="PropertyGrid" VerticalAlignment="Top">
+                <!--<DataGrid x:Name="PropertyGrid" VerticalAlignment="Top">
                     <DataGrid.Columns>
                         <DataGridTextColumn Width="*" Header="Property" Binding="{Binding propName}" />
                         <DataGridTextColumn Width="*" Header="Value" Binding="{Binding propValue}" />
                     </DataGrid.Columns>
-                </DataGrid>
+                </DataGrid>-->
             </TabItem>
             <!-- HOW TO USE THIS PROGRAM TAB -->
             <TabItem Header="Help">
-                <Grid Background="#FFE5E5E5"/>
+                <!--<Grid Background="#FFE5E5E5"/>-->
             </TabItem>
         </TabControl>
     </Grid>
