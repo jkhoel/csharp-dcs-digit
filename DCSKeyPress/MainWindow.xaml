@@ -62,7 +62,7 @@
 
                     <!-- Data Grid -->
                     <TextBlock Text="Coordinate List" FontWeight="Bold" Margin="0 10 0 5" />
-                    <DataGrid x:Name="DataGridCoords" VerticalAlignment="Top" Height="250" Margin="0 0 0 5">
+                    <DataGrid x:Name="DataGridCoords" VerticalAlignment="Top" Height="250" Margin="0 0 0 5" IsReadOnly="True" AutoGenerateColumns="False">
 
                         <!-- Heading Styles -->
                         <DataGrid.Resources>
@@ -86,7 +86,25 @@
                             <DataGridTextColumn Width="2*" Header="Latitude" Binding="{Binding latitude}" />
                             <DataGridTextColumn Width="2*" Header="Longditude" Binding="{Binding longditude}" />
                             <DataGridTextColumn Width="*" Header="Elevation" Binding="{Binding elevation}" />
-                            
+
+                            <!-- Move Row UP Button -->
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Click="DataViewRowUP_Click" Content="▲" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Move Row DOWN Button -->
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Click="DataViewRowDOWN_Click" Content="▼" /> 
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
                             <!-- Delete Row Button -->
                             <DataGridTemplateColumn>
                                 <DataGridTemplateColumn.CellTemplate>

@@ -9,6 +9,8 @@ using GregsStack.InputSimulatorStandard.Native;
 
 using System.Xml.Linq;
 using System.Linq;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 /** 
 * VIRTUAL KEY CODES: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes?redirectedfrom=MSDN
@@ -114,21 +116,68 @@ namespace DCSKeyPress
             //coord25.longditude = "605544333";
             //coord25.elevation = "2000";
             //DataGridCoords.Items.Add(coord25);
-        }
 
-        protected override void OnClosed(EventArgs e)
-        {
 
-            Properties.Settings.Default.MainWindowLeft = this.Left;
-            Properties.Settings.Default.MainWindowTop = this.Top;
-
-            Properties.Settings.Default.Save();
-
-            base.OnClosed(e);
+            // Set up the DataGridCoords View
+            //DataGridCoords.ItemsSource = CoordList;
         }
 
         /// <summary>
-        /// Defines a global dictionary to store all keybind aliases in
+        ///     CoordinateList for the DataGridView Items
+        /// </summary>
+        //public List<Coordinate> CoordList = new List<Coordinate>();
+
+        /// <summary>
+        /// Coordinate Class for storing and displaying Coordinates to the DataGrid
+        /// </summary>
+        public class Coordinate
+        {
+            public string id { get; set; }
+            public string latitude { get; set; }
+            public string longditude { get; set; }
+            public string elevation { get; set; }
+        }
+
+        /// <summary>
+        /// DMS Coordinate Class
+        /// </summary>
+        public class DMSCoord
+        {
+            public int dec { get; set; }
+            public int min { get; set; }
+            public int sec { get; set; }
+
+            public void fromDD(double dd)
+            {
+                // 156.742 => 156° 44' 31"
+                this.dec = (int)dd;
+
+                double min = (dd - this.dec) * 60;
+                this.min = (int)min;
+
+                double sec = (min - this.min) * 60;
+                this.sec = (int)sec;
+            }
+        }
+
+        public class DDMCoord
+        {
+            public int deg { get; set; }
+            public double dec { get; set; }
+            public string coord { get; set; }
+
+            public void fromDD(double dd)
+            {
+                // 41.7585 => 41° 45.510'N
+                this.deg = (int)dd;
+                this.dec = (dd - this.deg) * 60;
+
+                this.coord = this.deg.ToString("# ") + this.dec.ToString("#.000");
+            }
+        }
+
+        /// <summary>
+        ///     Defines a global dictionary to store all keybind aliases in
         /// </summary>
         public IDictionary<string, KeyAliasClass> KeyAlias = new Dictionary<string, KeyAliasClass>();
 
@@ -167,15 +216,15 @@ namespace DCSKeyPress
             public VirtualKeyCode action { get; set; }
         }
 
-        /// <summary>
-        /// Coordinate Class for storing and displaying Coordinates to the DataGrid
-        /// </summary>
-        public class Coordinate
+        protected override void OnClosed(EventArgs e)
         {
-            public string id { get; set; }
-            public string latitude { get; set; }
-            public string longditude { get; set; }
-            public string elevation { get; set; }
+
+            Properties.Settings.Default.MainWindowLeft = this.Left;
+            Properties.Settings.Default.MainWindowTop = this.Top;
+
+            Properties.Settings.Default.Save();
+
+            base.OnClosed(e);
         }
 
         /// <summary>
@@ -186,14 +235,15 @@ namespace DCSKeyPress
         private void AddCoordBtn_Click(object sender, RoutedEventArgs e)
         {
             // Create a new Coordinate
-            Coordinate tempCoord = new Coordinate();
-            tempCoord.id = newCoordId.Text;
-            tempCoord.latitude = newCoordLat.Text;
-            tempCoord.longditude = newCoordLon.Text;
-            tempCoord.elevation = newCoordElev.Text;
+            //Coordinate tempCoord = new Coordinate();
+            //tempCoord.id = newCoordId.Text;
+            //tempCoord.latitude = newCoordLat.Text;
+            //tempCoord.longditude = newCoordLon.Text;
+            //tempCoord.elevation = newCoordElev.Text;
 
             // Add it to the DataGrid
-            DataGridCoords.Items.Add(tempCoord);
+            // DataGridCoords.Items.Add(tempCoord);
+            DataGridCoords.Items.Add(new Coordinate() { id = newCoordId.Text, latitude = newCoordLat.Text, longditude = newCoordLon.Text, elevation = newCoordElev.Text });
 
             // Autoincrement the ID
             newCoordId.Text = Convert.ToString(Convert.ToInt16(newCoordId.Text) + 1);
@@ -216,6 +266,55 @@ namespace DCSKeyPress
         }
 
         /// <summary>
+        /// Removes row from the DataView
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DataViewRowUP_Click(object sender, RoutedEventArgs e)
+        {
+
+            Console.WriteLine("MOVE UP");
+
+            var currentIndex = DataGridCoords.Items.IndexOf(DataGridCoords.CurrentItem);
+
+            // Make sure we only move up if we are not allready at the top row
+            if (currentIndex != 0)
+            {
+                // Get a reference to the previous item...
+                Object prevItem = DataGridCoords.Items.GetItemAt(currentIndex - 1);
+
+                // Remove the previous items from the list...
+                DataGridCoords.Items.Remove(prevItem);
+
+                // Reinsert it at the current index, as the current item will have moved to currentIndex - 1 at this point
+                DataGridCoords.Items.Insert(currentIndex, prevItem);
+            }
+        }
+
+        /// <summary>
+        /// Removes row from the DataView
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DataViewRowDOWN_Click(object sender, RoutedEventArgs e)
+        {
+            var currentIndex = DataGridCoords.Items.IndexOf(DataGridCoords.CurrentItem);
+
+            // We only want to move down if we are not on the last row
+            if (currentIndex != DataGridCoords.Items.Count - 1)
+            {
+                // Get a reference to the next item...
+                Object nextItem = DataGridCoords.Items.GetItemAt(currentIndex + 1);
+
+                // Remove the next items from the list...
+                DataGridCoords.Items.Remove(nextItem);
+
+                // Reinsert it at the current index, as the current item will have moved to currentIndex + 1 at this point
+                DataGridCoords.Items.Insert(currentIndex, nextItem);
+            }
+        }
+
+        /// <summary>
         /// Input a number sequence to the UFC
         /// </summary>
         /// <param name="sequence">Number sequence to input</param>
@@ -229,6 +328,9 @@ namespace DCSKeyPress
             // For each character, type the character using the aliased keybind(s)
             foreach (char character in characters)
             {
+                // Output character to Console - debuging
+                Console.Out.WriteLine(Convert.ToString(character));
+
                 // Get the keybinds for this char
                 var keybinds = KeyAlias[Convert.ToString(character)];
 
@@ -325,44 +427,6 @@ namespace DCSKeyPress
             }
         }
 
-        /// <summary>
-        /// DMS Coordinate Class
-        /// </summary>
-        public class DMSCoord
-        {
-            public int dec { get; set; }
-            public int min { get; set; }
-            public int sec { get; set; }
-
-            public void fromDD(double dd)
-            {
-                // 156.742 => 156° 44' 31"
-                this.dec = (int)dd;
-
-                double min = (dd - this.dec) * 60;
-                this.min = (int)min;
-
-                double sec = (min - this.min) * 60;
-                this.sec = (int)sec;
-            }
-        }
-
-        public class DDMCoord
-        {
-            public int deg { get; set; }
-            public double dec { get; set; }
-            public string coord { get; set; }
-
-            public void fromDD(double dd)
-            {
-                // 41.7585 => 41° 45.510'N
-                this.deg = (int)dd;                       
-                this.dec = (dd - this.deg) * 60;
-
-                this.coord = this.deg.ToString("# ") + this.dec.ToString("#.000");
-            }
-        }
-
         private void ImportCoordsBtn_Click(object sender, RoutedEventArgs e)
         {
             var xml = XDocument.Load(@"C:\test.xml");
@@ -386,17 +450,30 @@ namespace DCSKeyPress
                 lat.fromDD(double.Parse(xmlLat, System.Globalization.CultureInfo.InvariantCulture));
                 lon.fromDD(double.Parse(xmlLon, System.Globalization.CultureInfo.InvariantCulture));
 
-                //MessageBox.Show((string)wp.Element("Position").Element("Latitude").Value);
-                MessageBox.Show(lat.coord, lon.coord);
+                //MessageBox.Show(lat.coord, lon.coord);
 
+                //Coordinate coord1 = new Coordinate();
+                //coord1.id = "1";
+                //coord1.latitude = "22500286";
+                //coord1.longditude = "605528038";
+                //coord1.elevation = "21000";
+                //DataGridCoords.Items.Add(coord1);
 
-                //DMSCoord dms = new DMSCoord();
-                //dms.fromDD(156.742);
+                // Crate new Coordinate
+                Coordinate tempCoord = new Coordinate();
+                tempCoord.id = newCoordId.Text;
+                tempCoord.latitude = String.Format("{0}{1:D2}{2:D3}", lat.deg, (int)lat.dec, (int)((lat.dec - (int)lat.dec) * 1000));
 
+                tempCoord.longditude = lat.coord;
 
-                // TODO! When printing to the datagrid, remember:
-                //double example = 12.34567;
-                //Console.Out.WriteLine(example.ToString("#.000"));
+                //tempCoord.longditude = lon.coord;
+                tempCoord.elevation = String.Format("{0:F0}", Convert.ToInt16(xmlAlt) * 3.28084);
+
+                // Add coordinate to the DataGrid
+                DataGridCoords.Items.Add(tempCoord);
+
+                // Autoincrement the ID
+                newCoordId.Text = Convert.ToString(Convert.ToInt16(newCoordId.Text) + 1);
             }
 
             //IEnumerable<XElement> waypoints = from el in xml.Elements("Waypoint") select el;
