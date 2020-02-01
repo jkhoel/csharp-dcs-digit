@@ -61,65 +61,11 @@ namespace DCSKeyPress
             KeyAlias.Add("0", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD0 });
 
             KeyAlias.Add("RET", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.LEFT });
-            KeyAlias.Add("ENT", new KeyAliasClass() { modifier = VirtualKeyCode.INSERT, action = VirtualKeyCode.INSERT });
+            KeyAlias.Add("ENT", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD_RETURN });
+
 
             KeyAlias.Add("DCS_DOWN", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.DOWN });
             KeyAlias.Add("DCS_UP", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.UP });
-
-            // DUMMY WAYPOINTS FOR TESTING
-
-            //Coordinate coord1 = new Coordinate();
-            //coord1.id = "1";
-            //coord1.latitude = "22500286";
-            //coord1.longditude = "605528038";
-            //coord1.elevation = "21000";
-            //DataGridCoords.Items.Add(coord1);
-
-            //Coordinate coord2 = new Coordinate();
-            //coord2.id = "2";
-            //coord2.latitude = "22507275";
-            //coord2.longditude = "605555663";
-            //coord2.elevation = "500";
-            //DataGridCoords.Items.Add(coord2);
-
-            //Coordinate coord3 = new Coordinate();
-            //coord3.id = "3";
-            //coord3.latitude = "22535768";
-            //coord3.longditude = "605620799";
-            //coord3.elevation = "500";
-            //DataGridCoords.Items.Add(coord3);
-
-            //Coordinate coord4 = new Coordinate();
-            //coord4.id = "4";
-            //coord4.latitude = "22621743";
-            //coord4.longditude = "605630541";
-            //coord4.elevation = "500";
-            //DataGridCoords.Items.Add(coord4);
-
-            //Coordinate coord5 = new Coordinate();
-            //coord5.id = "5";
-            //coord5.latitude = "22622170";
-            //coord5.longditude = "605621795";
-            //coord5.elevation = "20";
-            //DataGridCoords.Items.Add(coord5);
-
-            //Coordinate coord6 = new Coordinate();
-            //coord6.id = "6";
-            //coord6.latitude = "22415433";
-            //coord6.longditude = "605432050";
-            //coord6.elevation = "59";
-            //DataGridCoords.Items.Add(coord6);
-
-            //Coordinate coord25 = new Coordinate();
-            //coord25.id = "25";
-            //coord25.latitude = "22233444";
-            //coord25.longditude = "605544333";
-            //coord25.elevation = "2000";
-            //DataGridCoords.Items.Add(coord25);
-
-
-            // Set up the DataGridCoords View
-            //DataGridCoords.ItemsSource = CoordList;
         }
 
         /// <summary>
@@ -462,11 +408,11 @@ namespace DCSKeyPress
                 // Crate new Coordinate
                 Coordinate tempCoord = new Coordinate();
                 tempCoord.id = newCoordId.Text;
-                tempCoord.latitude = String.Format("{0}{1:D2}{2:D3}", lat.deg, (int)lat.dec, (int)((lat.dec - (int)lat.dec) * 1000));
+                tempCoord.latitude = String.Format("2{0:D2}{1:D2}{2:D3}", lat.deg, (int)lat.dec, (int)((lat.dec - (int)lat.dec) * 1000));
 
-                tempCoord.longditude = lat.coord;
-
+                tempCoord.longditude = String.Format("6{0:D3}{1:D2}{2:D3}", lon.deg, (int)lon.dec, (int)((lon.dec - (int)lon.dec) * 1000));
                 //tempCoord.longditude = lon.coord;
+
                 tempCoord.elevation = String.Format("{0:F0}", Convert.ToInt16(xmlAlt) * 3.28084);
 
                 // Add coordinate to the DataGrid
