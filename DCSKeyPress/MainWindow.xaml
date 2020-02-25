@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DCSKeyPress"
         mc:Ignorable="d"
-        Title="DCSKeyPress by 132nd.Dex" 
+        Title="DCSKeyPress v0.2 by 132nd.Dex" 
         SizeToContent="WidthAndHeight"
         ResizeMode="CanMinimize"
         >
@@ -24,8 +24,8 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button x:Name="ImportCoordsBtn" Content="Import XML" Margin="0 0 2.5 0" Grid.Column="0" Click="ImportCoordsBtn_Click" />
-                        <Button x:Name="ExportCoordsBtn" Content="Export XML" Margin="2.5 0 0 0" Grid.Column="1" />
+                        <Button x:Name="ImportCoordsBtn" Content="Import" Margin="0 0 2.5 0" Grid.Column="0" Click="ImportCoordsBtn_Click" />
+                        <Button x:Name="ExportCoordsBtn" Content="Export" Margin="2.5 0 0 0" Grid.Column="1" />
 
                     </Grid>
 
@@ -83,6 +83,7 @@
                         <!-- Column Header Text & Bindings -->
                         <DataGrid.Columns>
                             <DataGridTextColumn Width="20" Header="#" Binding="{Binding id}" />
+                            <DataGridTextColumn Width="*" Header="Name" Binding="{Binding name}" />
                             <DataGridTextColumn Width="2*" Header="Latitude" Binding="{Binding latitude}" />
                             <DataGridTextColumn Width="2*" Header="Longditude" Binding="{Binding longditude}" />
                             <DataGridTextColumn Width="*" Header="Elevation" Binding="{Binding elevation}" />

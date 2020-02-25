@@ -8,9 +8,9 @@ using GregsStack.InputSimulatorStandard;
 using GregsStack.InputSimulatorStandard.Native;
 
 using System.Xml.Linq;
-using System.Linq;
-using System.Windows.Controls;
-using System.Windows.Data;
+using System.Text.Json;
+using System.IO;
+using System.Globalization;
 
 /** 
 * VIRTUAL KEY CODES: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes?redirectedfrom=MSDN
@@ -79,6 +79,7 @@ namespace DCSKeyPress
         public class Coordinate
         {
             public string id { get; set; }
+            public string name { get; set; }
             public string latitude { get; set; }
             public string longditude { get; set; }
             public string elevation { get; set; }
@@ -227,7 +228,7 @@ namespace DCSKeyPress
             if (currentIndex != 0)
             {
                 // Get a reference to the previous item...
-                Object prevItem = DataGridCoords.Items.GetItemAt(currentIndex - 1);
+                object prevItem = DataGridCoords.Items.GetItemAt(currentIndex - 1);
 
                 // Remove the previous items from the list...
                 DataGridCoords.Items.Remove(prevItem);
@@ -250,7 +251,7 @@ namespace DCSKeyPress
             if (currentIndex != DataGridCoords.Items.Count - 1)
             {
                 // Get a reference to the next item...
-                Object nextItem = DataGridCoords.Items.GetItemAt(currentIndex + 1);
+                object nextItem = DataGridCoords.Items.GetItemAt(currentIndex + 1);
 
                 // Remove the next items from the list...
                 DataGridCoords.Items.Remove(nextItem);
@@ -375,57 +376,121 @@ namespace DCSKeyPress
 
         private void ImportCoordsBtn_Click(object sender, RoutedEventArgs e)
         {
-            var xml = XDocument.Load(@"C:\test.xml");
+            // File Input Dialog
+            //Microsoft.Win32.OpenFileDialog fileDialog = new Microsoft.Win32.OpenFileDialog();
+            //fileDialog.Title = "Select file to Import";
+            //fileDialog.Filter = "Supported files (*.xml, *.json)|*.xml; *.json|All files (*.*)|*.*";
+            //fileDialog.ShowDialog();
 
-            IEnumerable<XElement> waypoints = xml.Root.Descendants("Waypoints").Elements();
-
-            foreach (var wp in waypoints)
+            Microsoft.Win32.OpenFileDialog fileDialog = new Microsoft.Win32.OpenFileDialog
             {
-                //Console.WriteLine(wp);
+                Title = "Select file to Import",
+                Filter = "Supported files (*.cf, *.json)|*.cf; *.json|All files (*.*)|*.*",
+                Multiselect = false
+            };
 
-                string xmlLat = wp.Element("Position").Element("Latitude").Value;
-                string xmlLon = wp.Element("Position").Element("Longitude").Value;
-                string xmlAlt = wp.Element("Position").Element("Altitude").Value;
 
-                Console.WriteLine(xmlLat);
-                Console.WriteLine(xmlLon);
 
-                DDMCoord lat = new DDMCoord();
-                DDMCoord lon = new DDMCoord();
+            if (fileDialog.ShowDialog() == true)
+            {
+                // Handle CF File (from Combat Flite)
+                if (fileDialog.SafeFileName.EndsWith("cf"))
+                { 
+                    System.IO.Compression.ZipArchive cfFile = System.IO.Compression.ZipFile.Open(fileDialog.FileName, System.IO.Compression.ZipArchiveMode.Read);
+                    foreach (System.IO.Compression.ZipArchiveEntry entry in cfFile.Entries)
+                    {
+                        if (entry.Name.ToUpper().EndsWith(".XML"))
+                        {
+                            System.IO.Compression.ZipArchiveEntry zipEntry = cfFile.GetEntry(entry.Name);
 
-                lat.fromDD(double.Parse(xmlLat, System.Globalization.CultureInfo.InvariantCulture));
-                lon.fromDD(double.Parse(xmlLon, System.Globalization.CultureInfo.InvariantCulture));
+                            using (System.IO.StreamReader sr = new System.IO.StreamReader(zipEntry.Open()))
+                            {
+                                // Handle XML file
+                                //var xml = XDocument.Load(fileDialog.FileName);
+                                var xml = XDocument.Parse(sr.ReadToEnd());
 
-                //MessageBox.Show(lat.coord, lon.coord);
+                                IEnumerable<XElement> waypoints = xml.Root.Descendants("Waypoints").Elements();
+                                foreach (var wp in waypoints)
+                                {
+                                    Console.WriteLine(wp);
 
-                //Coordinate coord1 = new Coordinate();
-                //coord1.id = "1";
-                //coord1.latitude = "22500286";
-                //coord1.longditude = "605528038";
-                //coord1.elevation = "21000";
-                //DataGridCoords.Items.Add(coord1);
+                                    string xmlName = wp.Element("Name").Value;
+                                    string xmlLat = wp.Element("Lat").Value;
+                                    string xmlLon = wp.Element("Lon").Value;
+                                    string xmlAlt = wp.Element("Altitude").Value;
 
-                // Crate new Coordinate
-                Coordinate tempCoord = new Coordinate();
-                tempCoord.id = newCoordId.Text;
-                tempCoord.latitude = String.Format("2{0:D2}{1:D2}{2:D3}", lat.deg, (int)lat.dec, (int)((lat.dec - (int)lat.dec) * 1000));
+                                    //Console.WriteLine(xmlLat);
+                                    //Console.WriteLine(xmlLon);
+                                    //Console.WriteLine(xmlAlt);
 
-                tempCoord.longditude = String.Format("6{0:D3}{1:D2}{2:D3}", lon.deg, (int)lon.dec, (int)((lon.dec - (int)lon.dec) * 1000));
-                //tempCoord.longditude = lon.coord;
+                                    DDMCoord lat = new DDMCoord();
+                                    DDMCoord lon = new DDMCoord();
 
-                tempCoord.elevation = String.Format("{0:F0}", Convert.ToInt16(xmlAlt) * 3.28084);
+                                    lat.fromDD(double.Parse(xmlLat, System.Globalization.CultureInfo.InvariantCulture));
+                                    lon.fromDD(double.Parse(xmlLon, System.Globalization.CultureInfo.InvariantCulture));
 
-                // Add coordinate to the DataGrid
-                DataGridCoords.Items.Add(tempCoord);
+                                    // Crate new Coordinate
+                                    Coordinate tempCoord = new Coordinate();
+                                    tempCoord.id = newCoordId.Text;
+                                    tempCoord.name = xmlName;
+                                    tempCoord.latitude = string.Format("2{0:D2}{1:D2}{2:D3}", lat.deg, (int)lat.dec, (int)((lat.dec - (int)lat.dec) * 1000));
+                                    tempCoord.longditude = string.Format("6{0:D3}{1:D2}{2:D3}", lon.deg, (int)lon.dec, (int)((lon.dec - (int)lon.dec) * 1000));
+                                    tempCoord.elevation = string.Format("{0:F0}", xmlAlt);
 
-                // Autoincrement the ID
-                newCoordId.Text = Convert.ToString(Convert.ToInt16(newCoordId.Text) + 1);
+                                    // Add coordinate to the DataGrid
+                                    DataGridCoords.Items.Add(tempCoord);
+
+                                    // Autoincrement the ID
+                                    newCoordId.Text = Convert.ToString(Convert.ToInt16(newCoordId.Text) + 1);
+                                }
+                            }
+                        }
+                    }
+
+                }
+                else if (fileDialog.SafeFileName.EndsWith("json"))
+                // Handle JSON file (From mdc.hoelweb.com)
+                {
+                    using (JsonDocument missionJson = JsonDocument.Parse(File.ReadAllText(fileDialog.FileName), new JsonDocumentOptions { AllowTrailingCommas = true }))
+                    {
+                        var waypoints = missionJson.RootElement.GetProperty("waypoints").EnumerateArray();
+
+                        foreach (JsonElement wp in waypoints)
+                        {
+                            //Console.WriteLine(wp.GetProperty("wp"));
+
+                            string wpName = wp.GetProperty("wp").GetString();
+                            string wpLat = wp.GetProperty("lat").GetString();
+                            string wpLon = wp.GetProperty("lon").GetString();
+                            string wpAlt = wp.GetProperty("alt").GetString();
+
+                            DDMCoord lat = new DDMCoord();
+                            DDMCoord lon = new DDMCoord();
+
+                            lat.fromDD(double.Parse(wpLat, System.Globalization.CultureInfo.InvariantCulture));
+                            lon.fromDD(double.Parse(wpLon, System.Globalization.CultureInfo.InvariantCulture));
+
+                            // Create Coordinate
+                            Coordinate tempCoord = new Coordinate();
+                            tempCoord.id = newCoordId.Text;
+                            tempCoord.name = wpName;
+                            tempCoord.latitude = string.Format("2{0:D2}{1:D2}{2:D3}", lat.deg, (int)lat.dec, (int)((lat.dec - (int)lat.dec) * 1000));
+                            tempCoord.longditude = string.Format("6{0:D3}{1:D2}{2:D3}", lon.deg, (int)lon.dec, (int)((lon.dec - (int)lon.dec) * 1000));
+                            tempCoord.elevation = string.Format("{0:F0}", wpAlt);
+
+                            //Console.WriteLine(tempCoord.latitude);
+                            //Console.WriteLine(tempCoord.longditude);
+                            //Console.WriteLine(tempCoord.elevation);
+
+                            // Add coordinate to the DataGrid
+                            DataGridCoords.Items.Add(tempCoord);
+
+                            // Autoincrement the ID
+                            newCoordId.Text = Convert.ToString(Convert.ToInt16(newCoordId.Text) + 1);
+                        }
+                    }
+                }
             }
-
-            //IEnumerable<XElement> waypoints = from el in xml.Elements("Waypoint") select el;
-
-            //var query = from wp in xml.Root.Descendants("Waypoints") select wp.Element("Name").Value;
-            //var query = from obj in xml.Root.Descendants("Waypoints") select obj;
         }
     }
 }
