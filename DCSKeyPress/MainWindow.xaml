@@ -5,147 +5,130 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DCSKeyPress"
         mc:Ignorable="d"
-        Title="DCSKeyPress v0.2 by 132nd.Dex" 
-        SizeToContent="WidthAndHeight"
-        ResizeMode="CanMinimize"
+        Title="DCS Digit F16C" 
+        SizeToContent="Height"
+        ResizeMode="CanMinimize" Width="550"
         >
     <Grid>
-        <TabControl x:Name="tabControl" Margin="10" MinHeight="200" Width="550" >
-            <!-- INPUT TAB -->
-            <TabItem Header="Coordinates">
+        <!-- INPUT TAB -->
+        <StackPanel>
+            <!-- Coordinate Inputs -->
+            <!-- <TextBlock Text="New Coordinate" FontWeight="Bold" Margin="0 5" /> -->
+            <GroupBox>
+                <GroupBox.Header>Add New Coordinate</GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-                <StackPanel>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-                    <!-- IMPORT / EXPORT Buttons -->
-                    <Grid>
+                    <TextBlock Margin="0 0 0 0" Text="#" Grid.Column="0" Grid.Row="0" />
+                    <TextBlock Margin="2.5 0 0 0" Text="Latitude:" Grid.Column="1" Grid.Row="0" />
+                    <TextBlock Margin="2.5 0 0 0" Text="Longditude:" Grid.Column="2" Grid.Row="0" />
+                    <TextBlock Margin="2.5 0 0 0" Text="Elevation:" Grid.Column="3" Grid.Row="0" />
 
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <TextBox x:Name="newCoordId" Grid.Column="0" Margin="0 0 2.5 0" Grid.Row="1"  />
+                    <TextBox x:Name="newCoordLat" Grid.Column="1" Margin="0 0 2.5 0" Grid.Row="1"  />
+                    <TextBox x:Name="newCoordLon" Grid.Column="2" Margin="2.5 0 2.5 0" Grid.Row="1"  />
+                    <TextBox x:Name="newCoordElev" Grid.Column="3" Margin="2.5 0 0 0" Grid.Row="1"  />
 
-                        <Button x:Name="ImportCoordsBtn" Content="Import" Margin="0 0 2.5 0" Grid.Column="0" Click="ImportCoordsBtn_Click" />
-                        <Button x:Name="ExportCoordsBtn" Content="Export" Margin="2.5 0 0 0" Grid.Column="1" />
+                    <Button x:Name="AddCoordBtn" Margin="0 5 0 0" Content="Add" Grid.ColumnSpan="4" Grid.Row="2" Click="AddCoordBtn_Click"/>
+                </Grid>
+            </GroupBox>
 
-                    </Grid>
+            <!-- IMPORT / EXPORT Buttons -->
+            <GroupBox>
+                <GroupBox.Header>Import Coordinates</GroupBox.Header>
+                <Grid>
 
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="0"/>
+                        <!-- should be "*" if Export button is added back -->
+                    </Grid.ColumnDefinitions>
 
-                    <!-- Coordinate Inputs -->
-                    <TextBlock Text="New Coordinate" FontWeight="Bold" Margin="0 5" />
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                    <Button x:Name="ImportCoordsBtn" Content="Import from File" Margin="0 0 2.5 0" Grid.Column="0" Click="ImportCoordsBtn_Click" />
+                    <!--<Button x:Name="ExportCoordsBtn" Content="Export" Margin="2.5 0 0 0" Grid.Column="1" />-->
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
+                </Grid>
+            </GroupBox>
 
-                        <TextBlock Margin="0 0 0 0" Text="#" Grid.Column="0" Grid.Row="0" />
-                        <TextBlock Margin="2.5 0 0 0" Text="Latitude:" Grid.Column="1" Grid.Row="0" />
-                        <TextBlock Margin="2.5 0 0 0" Text="Longditude:" Grid.Column="2" Grid.Row="0" />
-                        <TextBlock Margin="2.5 0 0 0" Text="Elevation:" Grid.Column="3" Grid.Row="0" />
+            <!-- Data Grid -->
+            <GroupBox>
+                <GroupBox.Header>Coordinates</GroupBox.Header>
 
-                        <TextBox x:Name="newCoordId" Grid.Column="0" Margin="0 0 2.5 0" Grid.Row="1"  />
-                        <TextBox x:Name="newCoordLat" Grid.Column="1" Margin="0 0 2.5 0" Grid.Row="1"  />
-                        <TextBox x:Name="newCoordLon" Grid.Column="2" Margin="2.5 0 2.5 0" Grid.Row="1"  />
-                        <TextBox x:Name="newCoordElev" Grid.Column="3" Margin="2.5 0 0 0" Grid.Row="1"  />
+                <DataGrid Grid.Row="1" x:Name="DataGridCoords" VerticalAlignment="Top" Height="250" Margin="0 0 0 5" IsReadOnly="True" AutoGenerateColumns="False">
 
-                        <Button x:Name="AddCoordBtn" Margin="0 5 0 0" Content="Add" Grid.ColumnSpan="4" Grid.Row="2" Click="AddCoordBtn_Click"/>
+                    <!-- Heading Styles -->
+                    <DataGrid.Resources>
+                        <Style TargetType="{x:Type DataGrid}">
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
 
-                    </Grid>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="Background" Value="LightYellow" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="BorderBrush" Value="Gray" />
+                            <Setter Property="Padding" Value="4 2" />
+                        </Style>
+                    </DataGrid.Resources>
 
-                    <!-- Data Grid -->
-                    <TextBlock Text="Coordinate List" FontWeight="Bold" Margin="0 10 0 5" />
-                    <DataGrid x:Name="DataGridCoords" VerticalAlignment="Top" Height="250" Margin="0 0 0 5" IsReadOnly="True" AutoGenerateColumns="False">
-
-                        <!-- Heading Styles -->
-                        <DataGrid.Resources>
-                            <Style TargetType="{x:Type DataGrid}">
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="Background" Value="Transparent" />
-                            </Style>
-
-                            <Style TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background" Value="LightYellow" />
-                                <Setter Property="FontWeight" Value="SemiBold" />
-                                <Setter Property="BorderThickness" Value="1" />
-                                <Setter Property="BorderBrush" Value="Gray" />
-                                <Setter Property="Padding" Value="4 2" />
-                            </Style>
-                        </DataGrid.Resources>
-
-                        <!-- Column Header Text & Bindings -->
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Width="20" Header="#" Binding="{Binding id}" />
-                            <DataGridTextColumn Width="*" Header="Name" Binding="{Binding name}" />
-                            <DataGridTextColumn Width="2*" Header="Latitude" Binding="{Binding latitude}" />
-                            <DataGridTextColumn Width="2*" Header="Longditude" Binding="{Binding longditude}" />
-                            <DataGridTextColumn Width="*" Header="Elevation" Binding="{Binding elevation}" />
-
-                            <!-- Move Row UP Button -->
-                            <DataGridTemplateColumn>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Click="DataViewRowUP_Click" Content="▲" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-                            <!-- Move Row DOWN Button -->
-                            <DataGridTemplateColumn>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Click="DataViewRowDOWN_Click" Content="▼" /> 
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-                            <!-- Delete Row Button -->
-                            <DataGridTemplateColumn>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Click="DeleteDataViewRow_Click" Content="X" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            
-                        </DataGrid.Columns>
-                    </DataGrid>
-
-
-                    <!-- Buttons -->
-                    <!--<Grid>
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                    </Grid>-->
-
-                        <Button x:Name="StartInput" Click="StartInput_Click" Content="Start Input" VerticalAlignment="Bottom" />
-                
-                </StackPanel>
-
-            </TabItem>
-            <!-- Settings TAB -->
-            <TabItem Header="Settings">
-                <!--<DataGrid x:Name="PropertyGrid" VerticalAlignment="Top">
+                    <!-- Column Header Text & Bindings -->
                     <DataGrid.Columns>
-                        <DataGridTextColumn Width="*" Header="Property" Binding="{Binding propName}" />
-                        <DataGridTextColumn Width="*" Header="Value" Binding="{Binding propValue}" />
+                        <DataGridTextColumn Width="20" Header="#" Binding="{Binding id}" />
+                        <DataGridTextColumn Width="*" Header="Name" Binding="{Binding name}" />
+                        <DataGridTextColumn Width="2*" Header="Latitude" Binding="{Binding latitude}" />
+                        <DataGridTextColumn Width="2*" Header="Longditude" Binding="{Binding longditude}" />
+                        <DataGridTextColumn Width="*" Header="Elevation" Binding="{Binding elevation}" />
+
+                        <!-- Move Row UP Button -->
+                        <DataGridTemplateColumn>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Click="DataViewRowUP_Click" Content="▲" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Move Row DOWN Button -->
+                        <DataGridTemplateColumn>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Click="DataViewRowDOWN_Click" Content="▼" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Delete Row Button -->
+                        <DataGridTemplateColumn>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Click="DeleteDataViewRow_Click" Content="X" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
                     </DataGrid.Columns>
-                </DataGrid>-->
-            </TabItem>
-            <!-- HOW TO USE THIS PROGRAM TAB -->
-            <TabItem Header="Help">
-                <!--<Grid Background="#FFE5E5E5"/>-->
-            </TabItem>
-        </TabControl>
+                </DataGrid>
+            </GroupBox>
+
+            <!-- Actions -->
+            <GroupBox>
+                <Button x:Name="StartInput" Click="StartInput_Click" Content="Start Input" VerticalAlignment="Bottom" />
+            </GroupBox>
+
+        </StackPanel>
+
     </Grid>
 </Window>
