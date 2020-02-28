@@ -27,7 +27,7 @@ namespace DCSKeyPress
     public partial class MainWindow : Window
     {
         /// <summary>
-        /// Main Window
+        ///     Main Window
         /// </summary>
         public MainWindow()
         {
@@ -47,34 +47,10 @@ namespace DCSKeyPress
 
             // Set default values for text fields
             newCoordId.Text = Convert.ToString(1);
-
-            // INPUT KeyAlias
-            KeyAlias.Add("1", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD1 });
-            KeyAlias.Add("2", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD2 });
-            KeyAlias.Add("3", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD3 });
-            KeyAlias.Add("4", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD4 });
-            KeyAlias.Add("5", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD5 });
-            KeyAlias.Add("6", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD6 });
-            KeyAlias.Add("7", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD7 });
-            KeyAlias.Add("8", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD8 });
-            KeyAlias.Add("9", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD9 });
-            KeyAlias.Add("0", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD0 });
-
-            KeyAlias.Add("RET", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.LEFT });
-            KeyAlias.Add("ENT", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.NUMPAD_RETURN });
-
-
-            KeyAlias.Add("DCS_DOWN", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.DOWN });
-            KeyAlias.Add("DCS_UP", new KeyAliasClass() { modifier = VirtualKeyCode.LCONTROL, action = VirtualKeyCode.UP });
         }
 
         /// <summary>
-        ///     CoordinateList for the DataGridView Items
-        /// </summary>
-        //public List<Coordinate> CoordList = new List<Coordinate>();
-
-        /// <summary>
-        /// Coordinate Class for storing and displaying Coordinates to the DataGrid
+        ///     Coordinate Class for storing and displaying Coordinates to the DataGrid
         /// </summary>
         public class Coordinate
         {
@@ -86,7 +62,7 @@ namespace DCSKeyPress
         }
 
         /// <summary>
-        /// DMS Coordinate Class
+        ///     DMS Coordinate Class
         /// </summary>
         public class DMSCoord
         {
@@ -107,6 +83,9 @@ namespace DCSKeyPress
             }
         }
 
+        /// <summary>
+        ///     DDM Coordinate Class
+        /// </summary>
         public class DDMCoord
         {
             public int deg { get; set; }
@@ -122,11 +101,6 @@ namespace DCSKeyPress
                 this.coord = this.deg.ToString("# ") + this.dec.ToString("#.000");
             }
         }
-
-        /// <summary>
-        ///     Defines a global dictionary to store all keybind aliases in
-        /// </summary>
-        public IDictionary<string, KeyAliasClass> KeyAlias = new Dictionary<string, KeyAliasClass>();
 
         /// <summary>
         /// Get a handle to an application window.
@@ -155,14 +129,8 @@ namespace DCSKeyPress
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
         /// <summary>
-        /// Key Alias Class to define keybind aliases
+        ///     Clean-up and store preferences when the Main Window closes
         /// </summary>
-        public class KeyAliasClass
-        {
-            public VirtualKeyCode modifier { get; set; }
-            public VirtualKeyCode action { get; set; }
-        }
-
         protected override void OnClosed(EventArgs e)
         {
 
@@ -262,69 +230,6 @@ namespace DCSKeyPress
         }
 
         /// <summary>
-        /// Input a number sequence to the UFC
-        /// </summary>
-        /// <param name="sequence">Number sequence to input</param>
-        private void inputSequence(string sequence)
-        {
-            var sim = new InputSimulator();
-
-            // Split the text string into seperate characters
-            char[] characters = sequence.ToCharArray();
-
-            // For each character, type the character using the aliased keybind(s)
-            foreach (char character in characters)
-            {
-                // Output character to Console - debuging
-                Console.Out.WriteLine(Convert.ToString(character));
-
-                // Get the keybinds for this char
-                var keybinds = KeyAlias[Convert.ToString(character)];
-
-                // Type the char
-                sim.Keyboard.Sleep(10).ModifiedKeyStroke(keybinds.modifier, keybinds.action);
-            }
-
-            // Presse ENT to finish input
-            sim.Keyboard.Sleep(10).ModifiedKeyStroke(KeyAlias["ENT"].modifier, KeyAlias["ENT"].action);
-        }
-
-        /// <summary>
-        /// Short-hand function for simulating ENT press
-        /// </summary>
-        private void pressENT()
-        {
-            var sim = new InputSimulator();
-            sim.Keyboard.Sleep(100).ModifiedKeyStroke(KeyAlias["ENT"].modifier, KeyAlias["ENT"].action);
-        }
-
-        /// <summary>
-        /// Short-hand function for simulating RET press
-        /// </summary>
-        private void pressRET()
-        {
-            var sim = new InputSimulator();
-            sim.Keyboard.Sleep(100)
-                .KeyDown(KeyAlias["RET"].modifier).Sleep(100).KeyDown(KeyAlias["RET"].action)
-                .Sleep(100)
-                .KeyUp(KeyAlias["RET"].action).Sleep(100).KeyUp(KeyAlias["RET"].modifier).Sleep(100);
-
-        }
-
-        /// <summary>
-        /// Short-hand function for simulating DCS_DOWN press
-        /// </summary>
-        private void pressDCS_DOWN()
-        {
-            var sim = new InputSimulator();
-            sim.Keyboard.Sleep(100)
-                .KeyDown(KeyAlias["DCS_DOWN"].modifier).Sleep(100).KeyDown(KeyAlias["DCS_DOWN"].action)
-                .Sleep(100)
-                .KeyUp(KeyAlias["DCS_DOWN"].action).Sleep(100).KeyUp(KeyAlias["DCS_DOWN"].modifier).Sleep(100);
-
-        }
-
-        /// <summary>
         /// Inputs Coordinates into Game
         /// </summary>
         /// <param name="sender"></param>
@@ -344,34 +249,14 @@ namespace DCSKeyPress
             // Activate the window
             SetForegroundWindow(windowHandle);
 
-
+            // Setup the keyboard simulator
             var sim = new InputSimulator();
 
-            // Start Inputing
-            foreach (Coordinate coord in DataGridCoords.Items)
-            {
-                // RET to ensure we are on the main DED page
-                pressRET();
-                pressRET();
+            // Setup the current selected airframe - TODO - Make this a switch statement based on something
+            F16C50 f16c50 = new F16C50();
 
-                // Open the STPT Page
-                inputSequence("4");
-
-                // Select Sequence
-                inputSequence(coord.id);
-                pressDCS_DOWN();
-
-                // Input LATITUDE
-                inputSequence(coord.latitude);
-                pressDCS_DOWN();
-
-                // Input LONGDITUDE
-                inputSequence(coord.longditude);
-                pressDCS_DOWN();
-
-                // Input ELEVATION
-                inputSequence(coord.elevation);
-            }
+            // Start Inputing - TODO - Make this a switch statement based on something
+            f16c50.inputCoordinateToDED(DataGridCoords.Items);
         }
 
         private void ImportCoordsBtn_Click(object sender, RoutedEventArgs e)
