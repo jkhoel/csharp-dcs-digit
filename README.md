@@ -1,6 +1,6 @@
 # DCS Digit
 
-DCS Digit automates typing in waypoints and other information to the aircraft's computer, in-place of any working data-cartridge system within DCS.
+DCS Digit automates typing in waypoints to the aircraft's computer, in-place of any working data-cartridge system within DCS.
 
 The program works by simulating a keyboard, reading the internal list of waypoints created within the program and then "pressing" the corresponding key combinations per supported model in order to input these into the aircraft. 
 
