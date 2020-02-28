@@ -14,7 +14,7 @@ It is important to note that any character required for selecting Northing, lead
 
 ## Creating the list of waypoints by importing files
 
-The waypoint list can either be created manually, imported from a *.CF (CombatFlite) file or from a *.JSON file exported from http://mdc.hoelweb.com.
+The waypoint list can either be created manually, imported from a *.CF (CombatFlite) file or from a *.JSON file exported from http://mdc.hoelweb.com. Note that it will pull the first flight only from the CF file, so the recommendation is to make a seperate file pr. flight just to make sure.
 
 You can add multiple files, or mix manually input and imported waypoints as they are all appended to the list when added, opposed to overwriting.
 
